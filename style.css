@@ -18,7 +18,7 @@ li{
     transition: box-shadow 1s;
     transition-timing-function: ease;
 }
-li:hover {
+li.nonColored:hover {
     box-shadow: 2px 2px 8px black inset;
 }
 #text {

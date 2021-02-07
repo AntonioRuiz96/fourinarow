@@ -1,6 +1,7 @@
-<!-- Credits to mr ceci_cifu for helping me with cool ideas! -->
+<!-- Credits to mr ceci_cifu for helping me with cool ideas and development! -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <title>4 in a row</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body style="height: 100%; width: 100%;">
     <label for="selection">Board's Size: </label>
 
@@ -22,14 +24,18 @@
     <select name="gameMode" id="gameMode" onchange="gameModeChange()">
         <option value="single" selected="selected">Single player</option>
         <option value="localmulti">Local Multiplayer</option>
-        <!-- WIP <option value="online">Online Multiplayer</option>-->
+        <option value="online">Online Multiplayer</option>
     </select>
 
-    <div id = "board">
-    
+    <div id="board">
+
     </div>
-    <p id="resetBtn" style="clear: both; width: 100%; text-align: center; margin-bottom: 30px;"><button style="margin-top:10px;" onclick="restartGame()"> Restart</button></p>
+    <p id="resetBtn" style="clear: both; width: 100%; text-align: center; margin-bottom: 30px;"><button
+            style="margin-top:10px;" onclick="restartGame()"> Restart</button></p>
     <div id="text"></div>
+    <div id="multiplayerContainer"></div>
+    <script src="peerjs.min.js"></script>
     <script src="game.js"></script>
 </body>
+
 </html>
