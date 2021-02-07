@@ -9,7 +9,7 @@ var gameOver =0;
 var winSound = new Audio('./audio/winSound.wav');
 var loseSound = new Audio('./audio/loseSound.flac');
 var turnSound = new Audio('./audio/turnSound.wav');
-var gameMode = document.getElementById("gamemode").value;
+var gameMode = document.getElementById("gameMode").value;
 var playerTurn = 1;
 
 //Load the board
@@ -206,23 +206,23 @@ function checkWinner(x,y,player){
                         gameOver =1;
                         if(champion == "player"){
                                 winSound.play();
-                                document.getElementById("button1").style.display = "none";
+                                document.getElementById("resetBtn").style.display = "none";
                                 document.getElementById("text").innerHTML ="You've won! Write your name: <br>" + 
-                                "<p><input id='winnername' type='text'></p><p><button onclick='saveValue()'>Save</button></p>";
+                                "<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>";
                         }else if(champion == "player1"){
                                 winSound.play();
-                                document.getElementById("button1").style.display = "none";
+                                document.getElementById("resetBtn").style.display = "none";
                                 document.getElementById("text").innerHTML ="Player1 has won! Write your name: <br>" + 
-                                "<p><input id='winnername' type='text'></p><p><button onclick='saveValue()'>Save</button></p>";
+                                "<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>";
                         }else if(champion == "player2"){
                                 winSound.play();
-                                document.getElementById("button1").style.display = "none";
+                                document.getElementById("resetBtn").style.display = "none";
                                 document.getElementById("text").innerHTML ="Player2 has won! Write your name: <br>" + 
-                                "<p><input id='winnername' type='text'></p><p><button onclick='saveValue()'>Save</button></p>";
+                                "<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>";
                         }else if (champion == "machine"){
                                 loseSound.play();
                                 matchesCount++;
-                                document.getElementById("button1").style.display = "";
+                                document.getElementById("resetBtn").style.display = "";
                                 document.getElementById("text").innerHTML ="You've lost (lol)";
                         }
                         break;
@@ -232,7 +232,7 @@ function checkWinner(x,y,player){
         }
         if (matchCount == 0 && fullCells == boardSize) {
                 matchesCount++;
-                document.getElementById("button1").style.display = "";
+                document.getElementById("resetBtn").style.display = "";
                 document.getElementById("text").innerHTML ="-- Draw --";
         }
 
@@ -240,7 +240,7 @@ function checkWinner(x,y,player){
 
 function saveValue(){
         var ganador = {
-                name: document.getElementById("winnername").value,
+                name: document.getElementById("winnerName").value,
                 numTiradas: matchesCount,
                 game: gameMode
             };
@@ -253,7 +253,7 @@ function saveValue(){
                 "<br>" + "Winner nº "+ (i+1) + " : "+ winners[i].name + " || Matches needed: "+ winners[i].numTiradas + " || Game mode: " + winners[i].game;
                 
         }
-        document.getElementById("button1").style.display = "";
+        document.getElementById("resetBtn").style.display = "";
 }
 
 function restartGame(){
@@ -266,7 +266,7 @@ function restartGame(){
 }
 
 function gameModeChange() {
-       gameMode=document.getElementById("gamemode").value;
+       gameMode=document.getElementById("gameMode").value;
        playerTurn =1;
        restartGame();
 }

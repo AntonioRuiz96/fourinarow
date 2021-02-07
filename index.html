@@ -6,42 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="AntonioRuiz96">
     <title>4 in a row</title>
-    <style>
-        *{
-            font-family: Calibri;
-        }
-        ul{
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            float: left;
-        }
-        li{
-            height: 60px; 
-            width:60px; 
-            background-color:white; 
-            border-radius:40px; 
-            border:2px solid #000000;
-            margin: 0;
-            padding: 0;
-            transition: box-shadow 1s;
-            transition-timing-function: ease;
-        }
-        li:hover {
-            box-shadow: 2px 2px 8px black inset;
-        }
-        #text {
-            text-align: center;
-        }
-        #text, #board{
-            margin: 0 auto;
-        }
-        #board{
-            border-radius:10px;
-            background-color: darkblue;
-        }
-       
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body style="height: 100%; width: 100%;">
     <label for="selection">Board's Size: </label>
@@ -52,9 +17,9 @@
         <option value="8">8x8</option>
     </select>
 
-    <label for="gamemode">Game mode: </label>
+    <label for="gameMode">Game mode: </label>
 
-    <select name="gamemode" id="gamemode" onchange="gameModeChange()">
+    <select name="gameMode" id="gameMode" onchange="gameModeChange()">
         <option value="single" selected="selected">Single player</option>
         <option value="localmulti">Local Multiplayer</option>
         <!-- WIP <option value="online">Online Multiplayer</option>-->
@@ -63,8 +28,8 @@
     <div id = "board">
     
     </div>
-    <p id="button1" style="clear: both; width: 100%; text-align: center; margin-bottom: 30px;"><button style="margin-top:10px;" onclick="restartGame()"> Restart</button></p>
+    <p id="resetBtn" style="clear: both; width: 100%; text-align: center; margin-bottom: 30px;"><button style="margin-top:10px;" onclick="restartGame()"> Restart</button></p>
     <div id="text"></div>
-    <script src="Fourinarow.js"></script>
+    <script src="game.js"></script>
 </body>
 </html>

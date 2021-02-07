@@ -1,0 +1,33 @@
+*{
+    font-family: Calibri;
+}
+ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    float: left;
+}
+li{
+    height: 60px; 
+    width:60px; 
+    background-color:white; 
+    border-radius:40px; 
+    border:2px solid #000000;
+    margin: 0;
+    padding: 0;
+    transition: box-shadow 1s;
+    transition-timing-function: ease;
+}
+li:hover {
+    box-shadow: 2px 2px 8px black inset;
+}
+#text {
+    text-align: center;
+}
+#text, #board{
+    margin: 0 auto;
+}
+#board{
+    border-radius:10px;
+    background-color: darkblue;
+}
