@@ -11,6 +11,7 @@ var loseSound = new Audio(`audio/loseSound.flac`);
 var turnSound = new Audio(`audio/turnSound.wav`);
 var gameMode = document.getElementById(`gameMode`).value;
 var playerTurn = 1;
+
 var conn = null;
 var peer = null;
 
@@ -108,7 +109,6 @@ function placeToken(x, y) {
                 playerData.playerTurn = 0;
                 checkWinner(x, y, peer.id);
                 console.log(playerData);
-
             }
 
             if (gameOver == 0 && gameMode == `single`) {
@@ -251,23 +251,23 @@ function checkWinner(x, y, player) {
             if (champion == `player`) {
                 winSound.play();
                 document.getElementById(`resetBtn`).style.display = `none`;
-                document.getElementById(`text`).innerHTML = `You've won! Write your name: <br>` +
+                document.getElementById(`resultStatus`).innerHTML = `You've won! Write your name: <br>` +
                     `<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>`;
             } else if (champion == `player1`) {
                 winSound.play();
                 document.getElementById(`resetBtn`).style.display = `none`;
-                document.getElementById(`text`).innerHTML = `Player1 has won! Write your name: <br>` +
+                document.getElementById(`resultStatus`).innerHTML = `Player1 has won! Write your name: <br>` +
                     `<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>`;
             } else if (champion == `player2`) {
                 winSound.play();
                 document.getElementById(`resetBtn`).style.display = `none`;
-                document.getElementById(`text`).innerHTML = `Player2 has won! Write your name: <br>` +
+                document.getElementById(`resultStatus`).innerHTML = `Player2 has won! Write your name: <br>` +
                     `<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>`;
             } else if (champion == `machine`) {
                 loseSound.play();
                 matchesCount++;
                 document.getElementById(`resetBtn`).style.display = `initial`;
-                document.getElementById(`text`).innerHTML = `You've lost (lol)`;
+                document.getElementById(`resultStatus`).innerHTML = `You've lost (lol)`;
             }
             break;
         } else {
@@ -277,7 +277,7 @@ function checkWinner(x, y, player) {
     if (matchCount == 0 && fullCells == boardSize) {
         matchesCount++;
         document.getElementById(`resetBtn`).style.display = `initial`;
-        document.getElementById(`text`).innerHTML = `-- Draw --`;
+        document.getElementById(`resultStatus`).innerHTML = `-- Draw --`;
     }
 }
 
@@ -290,9 +290,9 @@ function saveValue() {
     winners.push(ganador);
     matchesCount = 1;
     console.log(winners);
-    document.getElementById(`text`).innerHTML = `List of Champions: <br>`
+    document.getElementById(`resultStatus`).innerHTML = `List of Champions: <br>`
     for (var i = 0; i < winners.length; i++) {
-        document.getElementById(`text`).innerHTML += `<br>Winner nº ${i + 1} : ${winners[i].name} || Matches needed: ${winners[i].numThrows} || Game mode: ${winners[i].game} `;
+        document.getElementById(`resultStatus`).innerHTML += `<br>Winner nº ${i + 1} : ${winners[i].name} || Matches needed: ${winners[i].numThrows} || Game mode: ${winners[i].game} `;
     }
     document.getElementById(`resetBtn`).style.display = `initial`;
 }
@@ -301,6 +301,7 @@ function restartGame() {
     for (var i = 0; i < columnNum; i++) {
         for (var j = 0; j < rowNum; j++) {
             document.getElementById(`col${i + 1}pos${j + 1}`).style.backgroundColor = `white`;
+            document.getElementById(`col${i + 1}pos${j + 1}`).className = `nonColored`;
         }
     }
     gameOver = 0;
@@ -315,10 +316,14 @@ function gameModeChange() {
 
     if (document.getElementById(`gameMode`).value == `online`) {
         document.getElementById(`resetBtn`).style.display = `none`;
-        var mpContainer = document.getElementById(`multiplayerContainer`);
-        mpContainer.innerHTML = `<input id='code' type='text' value='${peer.id}' disabled>`;
-        mpContainer.innerHTML += `<input id='connect' type='text' placeholder='Code to connect'>`;
-        mpContainer.innerHTML += `<button id='connectButton' type='text'>Connect</button>`;
+
+        var mpCode = document.getElementById(`multiplayerCode`);
+        mpCode.innerHTML = `<p>Your Code</p><br>`;
+        mpCode.innerHTML += `<input id='code' type='text' value='${peer.id}' disabled><br><br>`;
+
+        var mpForm = document.getElementById(`multiplayerForm`);
+        mpForm.innerHTML = `<input id='connect' type='text' placeholder='Type code to connect'>`;
+        mpForm.innerHTML += `<button id='connectButton' type='text'>Connect</button>`;
         document.getElementById(`connectButton`).addEventListener(`click`, () => {
             if (conn) {
                 conn.close();
@@ -329,9 +334,10 @@ function gameModeChange() {
 
             conn.on(`open`, function () {
                 //connects to the other peer (player 2)
-                document.getElementById(`multiplayerContainer`).innerHTML = `Connected to: ${conn.peer}`;
+                document.getElementById(`multiplayerForm`).innerHTML = `Connected to: ${conn.peer}`;
                 playerData.playerTurn = 1;
                 conn.send(playerData);
+                playerData.playerTurn = 0;
             });
 
             conn.on(`data`, function (data) {
@@ -346,19 +352,17 @@ function gameModeChange() {
             });
         });
     } else {
-        document.getElementById(`multiplayerContainer`).innerHTML = ``;
+        document.getElementById(`multiplayerForm`).innerHTML = ``;
     }
     restartGame();
 }
 
 // Connection
 function initMultiplayer() {
-    peer = new Peer(null, {
-        debug: 2
-    });
+    peer = new Peer();
 
     peer.on(`open`, function (id) {
-        console.log(`Id: ${peer.id}`);
+        // console.log(`Id: ${peer.id}`);
     });
 
     peer.on(`connection`, function (c) {
@@ -371,7 +375,7 @@ function initMultiplayer() {
         }
         conn = c;
         //This one is the host (player 1)
-        document.getElementById(`multiplayerContainer`).innerHTML = `Connected to: ${conn.peer} `;
+        document.getElementById(`multiplayerForm`).innerHTML = `Connected to: ${conn.peer} `;
         ready();
     });
 

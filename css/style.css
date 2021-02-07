@@ -1,9 +1,11 @@
 * {
-    font-family: Calibri;
+    margin: 0;
 }
 body {
+    font-family: Arial, Helvetica, sans-serif;
     height: 100%; 
     width: 100%;
+    overflow-x: hidden;
 }
 ul {
     list-style: none;
@@ -28,9 +30,12 @@ li.nonColored:hover {
 #options {
     width: 100%;
     text-align: center;
-    margin-bottom: 10px;
+    margin: 10px 0;
 }
-#text, #multiplayerContainer {
+#text, #multiplayerForm, #multiplayerCode {
+    text-align: center;
+}
+#multiplayerCode #code {
     text-align: center;
 }
 #board {
