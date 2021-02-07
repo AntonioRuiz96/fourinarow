@@ -13,7 +13,7 @@ var gameMode = document.getElementById("gameMode").value;
 var playerTurn = 1;
 var conn = null;
 var peer = null;
-var playerData = {
+var playerData = {//TODO add variable to capture when the game is over and who the winner
     ID: null,
     playerTurn: 0,
     cell: {
@@ -65,9 +65,6 @@ function loadBoard(size) {
 }
 
 function placeToken(x, y) {
-    if (playerData.playerTurn == 0) {
-        return;
-    }
 
     if (gameOver == 0 && document.getElementById("col" + x + "pos" + y).style.backgroundColor != "red" &&
         document.getElementById("col" + x + "pos" + y).style.backgroundColor != "yellow") {
@@ -88,33 +85,29 @@ function placeToken(x, y) {
                 playerTurn = 1;
                 checkWinner(x, y, "player2");
             }
-            else if (gameOver == 0 && gameMode == "online" && playerData.playerTurn == 1) {
-                cell.style.backgroundColor = "red";
-                cell.className = "";
-                playerData.cell.x = x;
-                playerData.cell.y = y;
-                playerData.ID = peer.id;
-                playerData.time = new Date().getTime();
-                playerData.playerTurn = 2;
-                conn.send(playerData);
-                playerData.playerTurn = 0;
-                checkWinner(x, y, peer.id);
-                console.log(playerData);
-            }
-            else if (gameOver == 0 && gameMode == "online" && playerData.playerTurn == 2) {
-                cell.style.backgroundColor = "yellow";
-                cell.className = "";
-                playerData.cell.x = x;
-                playerData.cell.y = y;
-                playerData.ID = peer.id;
-                playerData.time = new Date().getTime();
-                playerData.playerTurn = 1;
-                conn.send(playerData);
-                playerData.playerTurn = 0;
-                checkWinner(x, y, peer.id);
-                console.log(playerData);
-            }
 
+            if (gameOver == 0 && gameMode == "online") {
+                if (playerData.playerTurn == 0) {
+                    return;
+                } else if (playerData.playerTurn == 1) {
+                    cell.style.backgroundColor = "red";
+                    playerData.playerTurn = 2;
+
+                } else if (playerData.playerTurn == 2) {
+                    cell.style.backgroundColor = "yellow";
+                    playerData.playerTurn = 1;
+                }
+                cell.className = "";
+                playerData.cell.x = x;
+                playerData.cell.y = y;
+                playerData.ID = peer.id;
+                playerData.time = new Date().getTime();
+                conn.send(playerData);
+                playerData.playerTurn = 0;
+                checkWinner(x, y, peer.id);
+                console.log(playerData);
+
+            }
 
             if (gameOver == 0 && gameMode == "single") {
                 cell.style.backgroundColor = "red";
@@ -273,7 +266,7 @@ function checkWinner(x, y, player) {
             } else if (champion == "machine") {
                 loseSound.play();
                 matchesCount++;
-                document.getElementById("resetBtn").style.display = "";
+                document.getElementById("resetBtn").style.display = "initial";
                 document.getElementById("text").innerHTML = "You've lost (lol)";
             }
             break;
@@ -283,7 +276,7 @@ function checkWinner(x, y, player) {
     }
     if (matchCount == 0 && fullCells == boardSize) {
         matchesCount++;
-        document.getElementById("resetBtn").style.display = "";
+        document.getElementById("resetBtn").style.display = "initial";
         document.getElementById("text").innerHTML = "-- Draw --";
     }
 
@@ -304,7 +297,7 @@ function saveValue() {
             "<br>" + "Winner nº " + (i + 1) + " : " + winners[i].name + " || Matches needed: " + winners[i].numThrows + " || Game mode: " + winners[i].game;
 
     }
-    document.getElementById("resetBtn").style.display = "";
+    document.getElementById("resetBtn").style.display = "initial";
 }
 
 function restartGame() {
@@ -319,10 +312,12 @@ function restartGame() {
 function gameModeChange() {
     gameMode = document.getElementById("gameMode").value;
     if (gameMode == "single" || gameMode == "localmulti") {
+        document.getElementById("resetBtn").style.display = "initial";
         playerTurn = 1;
     }
 
     if (document.getElementById("gameMode").value == "online") {
+        document.getElementById("resetBtn").style.display = "none";
         var mpContainer = document.getElementById("multiplayerContainer");
         mpContainer.innerHTML = `<input id='code' type='text' value="${peer.id}" disabled>`;
         mpContainer.innerHTML += "<input id='connect' type='text' placeholder='Introduce the ID code to connect to another player'>";
