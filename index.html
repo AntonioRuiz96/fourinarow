@@ -7,34 +7,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="AntonioRuiz96">
     <title>4 in a row</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body style="height: 100%; width: 100%;">
-    <label for="selection">Board's Size: </label>
+<body>
+    <div id="options">
+        <label for="selection">Board's Size: </label>
+        <select name="selection" id="selection" onchange="loadBoard(this.value)">
+            <option value="4" selected="selected">4x4</option>
+            <option value="6">6x6</option>
+            <option value="8">8x8</option>
+        </select>
 
-    <select name="selection" id="selection" onchange="loadBoard(this.value)">
-        <option value="4" selected="selected">4x4</option>
-        <option value="6">6x6</option>
-        <option value="8">8x8</option>
-    </select>
-
-    <label for="gameMode">Game mode: </label>
-
-    <select name="gameMode" id="gameMode" onchange="gameModeChange()">
-        <option value="single" selected="selected">Single player</option>
-        <option value="localmulti">Local Multiplayer</option>
-        <option value="online">Online Multiplayer</option>
-    </select>
-
-    <div id="board">
-
+        <label for="gameMode">Game mode: </label>
+        <select name="gameMode" id="gameMode" onchange="gameModeChange()">
+            <option value="single" selected="selected">Single player</option>
+            <option value="localmulti">Local Multiplayer</option>
+            <option value="online">Online Multiplayer</option>
+        </select>
     </div>
-    <p style="clear: both; width: 100%; text-align: center; margin-bottom: 30px;"><button id="resetBtn"
-            style="margin-top:10px;" onclick="restartGame()"> Restart</button></p>
+
+    <div id="board"></div>
+    <div id="buttons">
+        <button id="resetBtn" onclick="restartGame()">Restart Game</button>
+    </div>
+
     <div id="text"></div>
     <div id="multiplayerContainer"></div>
-    <script src="peerjs.min.js"></script>
+    <script src="js/peerjs.min.js"></script>
     <script src="game.js"></script>
 </body>
 

@@ -6,14 +6,16 @@
 var winners = [];
 var matchesCount = 1;
 var gameOver = 0;
-var winSound = new Audio('./audio/winSound.wav');
-var loseSound = new Audio('./audio/loseSound.flac');
-var turnSound = new Audio('./audio/turnSound.wav');
-var gameMode = document.getElementById("gameMode").value;
+var winSound = new Audio(`audio/winSound.wav`);
+var loseSound = new Audio(`audio/loseSound.flac`);
+var turnSound = new Audio(`audio/turnSound.wav`);
+var gameMode = document.getElementById(`gameMode`).value;
 var playerTurn = 1;
 var conn = null;
 var peer = null;
-var playerData = {//TODO add variable to capture when the game is over and who the winner
+
+//TODO add variable to capture when the game is over and who the winner
+var playerData = {
     ID: null,
     playerTurn: 0,
     cell: {
@@ -27,77 +29,77 @@ var playerData = {//TODO add variable to capture when the game is over and who t
 loadBoard(4);
 initMultiplayer();
 
-var boardSize = document.getElementsByTagName("li").length;
-var rowNum = document.getElementById("column1").getElementsByTagName("li").length;
-var columnNum = document.getElementsByTagName("ul").length;
+var boardSize = document.getElementsByTagName(`li`).length;
+var rowNum = document.getElementById(`column1`).getElementsByTagName(`li`).length;
+var columnNum = document.getElementsByTagName(`ul`).length;
 
 function loadBoard(size) {
     switch (parseInt(size)) {
         case 4:
-            document.getElementById("board").style.height = "257px";
-            document.getElementById("board").style.width = "257px";
+            document.getElementById(`board`).style.height = `257px`;
+            document.getElementById(`board`).style.width = `257px`;
             break;
         case 6:
-            document.getElementById("board").style.height = "385px";
-            document.getElementById("board").style.width = "385px";
+            document.getElementById(`board`).style.height = `385px`;
+            document.getElementById(`board`).style.width = `385px`;
             break;
         case 8:
-            document.getElementById("board").style.height = "513px";
-            document.getElementById("board").style.width = "513px";
+            document.getElementById(`board`).style.height = `513px`;
+            document.getElementById(`board`).style.width = `513px`;
             break;
         default:
             break;
     }
 
-    document.getElementById("board").innerHTML = "";
+    document.getElementById(`board`).innerHTML = ``;
     for (var i = 0; i < size; i++) {
-        document.getElementById("board").innerHTML = document.getElementById("board").innerHTML + "<ul id='column" + (i + 1) + "'></ul>";
+        document.getElementById(`board`).innerHTML += `<ul id=column${i + 1}></ul>`;
         for (var j = 0; j < size; j++) {
-            document.getElementById("column" + (i + 1)).innerHTML = document.getElementById("column" + (i + 1)).innerHTML + "<li class='nonColored' id='col" +
-                (i + 1) + "pos" + (j + 1) + "' onclick='placeToken(" + (i + 1) + ", " + (j + 1) + ")'></li>";
+            document.getElementById(`column${i + 1}`).innerHTML = document.getElementById(`column${i + 1}`).innerHTML + `
+            <li class='nonColored' id='col${i + 1}pos${j + 1}' onclick='placeToken(${i + 1}, ${j + 1})'></li>`;
         }
     }
-    boardSize = document.getElementsByTagName("li").length;
-    rowNum = document.getElementById("column1").getElementsByTagName("li").length;
-    columnNum = document.getElementsByTagName("ul").length;
+    boardSize = document.getElementsByTagName(`li`).length;
+    rowNum = document.getElementById(`column1`).getElementsByTagName(`li`).length;
+    columnNum = document.getElementsByTagName(`ul`).length;
     console.log(boardSize, rowNum, columnNum);
     restartGame();
 }
 
 function placeToken(x, y) {
 
-    if (gameOver == 0 && document.getElementById("col" + x + "pos" + y).style.backgroundColor != "red" &&
-        document.getElementById("col" + x + "pos" + y).style.backgroundColor != "yellow") {
+    if (gameOver == 0 && document.getElementById(`col${x}pos${y}`).style.backgroundColor != "red" &&
+        document.getElementById(`col${x}pos${y}`).style.backgroundColor != "yellow") {
         turnSound.play();
     }
     if (gameOver == 0) {
-        var cell = document.getElementById("col" + x + "pos" + y);
+        var cell = document.getElementById(`col${x}pos${y}`);
 
-        if (cell.style.backgroundColor != "red" && cell.style.backgroundColor != "yellow") {
-            if (gameOver == 0 && gameMode == "localmulti" && playerTurn == 1) {
-                cell.style.backgroundColor = "red";
-                cell.className = "";
+        if (cell.style.backgroundColor != `red` && cell.style.backgroundColor != `yellow`) {
+            if (gameOver == 0 && gameMode == `localmulti` && playerTurn == 1) {
+                cell.style.backgroundColor = `red`;
+                cell.className = ``;
                 playerTurn = 2;
-                checkWinner(x, y, "player1");
-            } else if (gameOver == 0 && gameMode == "localmulti" && playerTurn == 2) {
-                cell.style.backgroundColor = "yellow";
-                cell.className = "";
+                checkWinner(x, y, `player1`);
+            } else if (gameOver == 0 && gameMode == `localmulti` && playerTurn == 2) {
+                cell.style.backgroundColor = `yellow`;
+                cell.className = ``;
                 playerTurn = 1;
-                checkWinner(x, y, "player2");
+                checkWinner(x, y, `player2`);
             }
 
-            if (gameOver == 0 && gameMode == "online") {
+            if (gameOver == 0 && gameMode == `online`) {
                 if (playerData.playerTurn == 0) {
                     return;
                 } else if (playerData.playerTurn == 1) {
-                    cell.style.backgroundColor = "red";
+                    cell.style.backgroundColor = `red`;
                     playerData.playerTurn = 2;
 
                 } else if (playerData.playerTurn == 2) {
-                    cell.style.backgroundColor = "yellow";
+                    cell.style.backgroundColor = `yellow`;
                     playerData.playerTurn = 1;
                 }
-                cell.className = "";
+                cell.className = ``;
                 playerData.cell.x = x;
                 playerData.cell.y = y;
                 playerData.ID = peer.id;
@@ -109,10 +111,10 @@ function placeToken(x, y) {
 
             }
 
-            if (gameOver == 0 && gameMode == "single") {
-                cell.style.backgroundColor = "red";
-                cell.className = "";
-                checkWinner(x, y, "player");
+            if (gameOver == 0 && gameMode == `single`) {
+                cell.style.backgroundColor = `red`;
+                cell.className = ``;
+                checkWinner(x, y, `player`);
                 randomThrow();
             }
         }
@@ -121,26 +123,25 @@ function placeToken(x, y) {
 
 function randomThrow() {
     var condition = true;
-    var fullCells = 0;
     var x;
     var y
     while (condition == true) {
         x = Math.floor((Math.random() * columnNum) + 1);
         y = Math.floor((Math.random() * columnNum) + 1);
-        var cell = document.getElementById("col" + x + "pos" + y);
-        if (cell.style.backgroundColor != "red" && cell.style.backgroundColor != "yellow") {
-            cell.style.backgroundColor = "yellow";
-            cell.className = "";
+        var cell = document.getElementById(`col${x}pos${y}`);
+        if (cell.style.backgroundColor != `red` && cell.style.backgroundColor != `yellow`) {
+            cell.style.backgroundColor = `yellow`;
+            cell.className = ``;
             condition = false;
         }
     }
 
-    checkWinner(x, y, "machine");
+    checkWinner(x, y, `machine`);
 }
 
 function checkWinner(x, y, player) {
-    var champion = "";
-    initialCell = document.getElementById("col" + x + "pos" + y);
+    var champion = ``;
+    initialCell = document.getElementById(`col${x}pos${y}`);
     var matchCount = 0;
     var directionX = 0;
     var directionY = 0;
@@ -148,8 +149,8 @@ function checkWinner(x, y, player) {
 
     for (var i = 0; i < columnNum; i++) {//full board Check
         for (var j = 0; j < rowNum; j++) {
-            if (document.getElementById("col" + (i + 1) + "pos" + (j + 1)).style.backgroundColor == "red"
-                || document.getElementById("col" + (i + 1) + "pos" + (j + 1)).style.backgroundColor == "yellow") {
+            if (document.getElementById(`col${i + 1}pos${j + 1}`).style.backgroundColor == `red`
+                || document.getElementById(`col${i + 1}pos${j + 1}`).style.backgroundColor == `yellow`) {
                 fullCells++;
             }
         }
@@ -192,7 +193,7 @@ function checkWinner(x, y, player) {
 
             default:
                 break;
-        }//TODO make game posible to swap 3 in a row to 6 in a row with all "4"s converted to variable
+        }//TODO make game posible to swap 3 in a row to 6 in a row with all `4`s converted to variable
         for (var k = 0; k < columnNum; k++) {//columns
             for (var j = 0; j < rowNum; j++) {//row
                 for (var z = 0; z < 4; z++) {//Cell checks
@@ -226,7 +227,7 @@ function checkWinner(x, y, player) {
                         }
 
                         if (posX <= rowNum && posY <= columnNum && posX > 0 && posY > 0) {//out of index checkout
-                            if (initialCell.style.backgroundColor == document.getElementById("col" + posX + "pos" + posY).style.backgroundColor) {
+                            if (initialCell.style.backgroundColor == document.getElementById(`col${posX}pos${posY}`).style.backgroundColor) {
                                 matchCount++;
                                 //console.log(matchCount);
                             }
@@ -242,32 +243,31 @@ function checkWinner(x, y, player) {
             } if (matchCount == 4) {
                 break;
             }
-
         }
 
         if (matchCount == 4) {
             champion = player;
             gameOver = 1;
-            if (champion == "player") {
+            if (champion == `player`) {
                 winSound.play();
-                document.getElementById("resetBtn").style.display = "none";
-                document.getElementById("text").innerHTML = "You've won! Write your name: <br>" +
-                    "<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>";
-            } else if (champion == "player1") {
+                document.getElementById(`resetBtn`).style.display = `none`;
+                document.getElementById(`text`).innerHTML = `You've won! Write your name: <br>` +
+                    `<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>`;
+            } else if (champion == `player1`) {
                 winSound.play();
-                document.getElementById("resetBtn").style.display = "none";
-                document.getElementById("text").innerHTML = "Player1 has won! Write your name: <br>" +
-                    "<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>";
-            } else if (champion == "player2") {
+                document.getElementById(`resetBtn`).style.display = `none`;
+                document.getElementById(`text`).innerHTML = `Player1 has won! Write your name: <br>` +
+                    `<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>`;
+            } else if (champion == `player2`) {
                 winSound.play();
-                document.getElementById("resetBtn").style.display = "none";
-                document.getElementById("text").innerHTML = "Player2 has won! Write your name: <br>" +
-                    "<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>";
-            } else if (champion == "machine") {
+                document.getElementById(`resetBtn`).style.display = `none`;
+                document.getElementById(`text`).innerHTML = `Player2 has won! Write your name: <br>` +
+                    `<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>`;
+            } else if (champion == `machine`) {
                 loseSound.play();
                 matchesCount++;
-                document.getElementById("resetBtn").style.display = "initial";
-                document.getElementById("text").innerHTML = "You've lost (lol)";
+                document.getElementById(`resetBtn`).style.display = `initial`;
+                document.getElementById(`text`).innerHTML = `You've lost (lol)`;
             }
             break;
         } else {
@@ -276,134 +276,129 @@ function checkWinner(x, y, player) {
     }
     if (matchCount == 0 && fullCells == boardSize) {
         matchesCount++;
-        document.getElementById("resetBtn").style.display = "initial";
-        document.getElementById("text").innerHTML = "-- Draw --";
+        document.getElementById(`resetBtn`).style.display = `initial`;
+        document.getElementById(`text`).innerHTML = `-- Draw --`;
     }
-
 }
 
 function saveValue() {
     var ganador = {
-        name: document.getElementById("winnerName").value,
+        name: document.getElementById(`winnerName`).value,
         numThrows: matchesCount,
         game: gameMode
     };
     winners.push(ganador);
     matchesCount = 1;
     console.log(winners);
-    document.getElementById("text").innerHTML = "List of Champions: <br>"
+    document.getElementById(`text`).innerHTML = `List of Champions: <br>`
     for (var i = 0; i < winners.length; i++) {
-        document.getElementById("text").innerHTML = document.getElementById("text").innerHTML +
-            "<br>" + "Winner nº " + (i + 1) + " : " + winners[i].name + " || Matches needed: " + winners[i].numThrows + " || Game mode: " + winners[i].game;
-
+        document.getElementById(`text`).innerHTML += `<br>Winner nº ${i + 1} : ${winners[i].name} || Matches needed: ${winners[i].numThrows} || Game mode: ${winners[i].game} `;
     }
-    document.getElementById("resetBtn").style.display = "initial";
+    document.getElementById(`resetBtn`).style.display = `initial`;
 }
 
 function restartGame() {
     for (var i = 0; i < columnNum; i++) {
         for (var j = 0; j < rowNum; j++) {
-            document.getElementById("col" + (i + 1) + "pos" + (j + 1)).style.backgroundColor = "white";
+            document.getElementById(`col${i + 1}pos${j + 1}`).style.backgroundColor = `white`;
         }
     }
     gameOver = 0;
 }
 
 function gameModeChange() {
-    gameMode = document.getElementById("gameMode").value;
-    if (gameMode == "single" || gameMode == "localmulti") {
-        document.getElementById("resetBtn").style.display = "initial";
+    gameMode = document.getElementById(`gameMode`).value;
+    if (gameMode == `single` || gameMode == `localmulti`) {
+        document.getElementById(`resetBtn`).style.display = `initial`;
         playerTurn = 1;
     }
 
-    if (document.getElementById("gameMode").value == "online") {
-        document.getElementById("resetBtn").style.display = "none";
-        var mpContainer = document.getElementById("multiplayerContainer");
-        mpContainer.innerHTML = `<input id='code' type='text' value="${peer.id}" disabled>`;
-        mpContainer.innerHTML += "<input id='connect' type='text' placeholder='Introduce the ID code to connect to another player'>";
-        mpContainer.innerHTML += "<button id='connectButton' type='text'>Connect</button>";
-        document.getElementById("connectButton").addEventListener("click", (e) => {
+    if (document.getElementById(`gameMode`).value == `online`) {
+        document.getElementById(`resetBtn`).style.display = `none`;
+        var mpContainer = document.getElementById(`multiplayerContainer`);
+        mpContainer.innerHTML = `<input id='code' type='text' value='${peer.id}' disabled>`;
+        mpContainer.innerHTML += `<input id='connect' type='text' placeholder='Code to connect'>`;
+        mpContainer.innerHTML += `<button id='connectButton' type='text'>Connect</button>`;
+        document.getElementById(`connectButton`).addEventListener(`click`, () => {
             if (conn) {
                 conn.close();
             }
 
-            const idValue = document.getElementById("connect").value;
+            const idValue = document.getElementById(`connect`).value;
             conn = peer.connect(idValue);
 
-            conn.on('open', function () {
-                console.log("Connected to: " + conn.peer);//connects to the other peer (player 2)
-                document.getElementById("multiplayerContainer").innerHTML = "connected to:" + conn.peer;
+            conn.on(`open`, function () {
+                //connects to the other peer (player 2)
+                document.getElementById(`multiplayerContainer`).innerHTML = `Connected to: ${conn.peer}`;
                 playerData.playerTurn = 1;
                 conn.send(playerData);
             });
 
-            conn.on('data', function (data) {
+            conn.on(`data`, function (data) {
                 playerData = data;
-                document.getElementById("col" + playerData.cell.x + "pos" + playerData.cell.y).style.backgroundColor = "red";
-                document.getElementById("col" + playerData.cell.x + "pos" + playerData.cell.y).className = "";
+                document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).style.backgroundColor = `red`;
+                document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).className = ``;
                 console.log(data);
             });
 
-            conn.on('close', function () {
+            conn.on(`close`, function () {
                 conn = null;
             });
         });
     } else {
-        document.getElementById("multiplayerContainer").innerHTML = "";
+        document.getElementById(`multiplayerContainer`).innerHTML = ``;
     }
     restartGame();
 }
 
 // Connection
-
 function initMultiplayer() {
     peer = new Peer(null, {
         debug: 2
     });
 
-    peer.on('open', function (id) {
-        console.log('ID: ' + peer.id);
+    peer.on(`open`, function (id) {
+        console.log(`Id: ${peer.id}`);
     });
 
-    peer.on('connection', function (c) {
+    peer.on(`connection`, function (c) {
         if (conn && conn.open) {
-            c.on('open', function () {
-                c.send("Already connected to another client");
+            c.on(`open`, function () {
+                c.send(`Already connected to another client`);
                 setTimeout(function () { c.close(); }, 500);
             });
             return;
         }
         conn = c;
-        console.log("Connected to: " + conn.peer);//This one is the host (player 1)
-        document.getElementById("multiplayerContainer").innerHTML = "Este es el HOST";
+        //This one is the host (player 1)
+        document.getElementById(`multiplayerContainer`).innerHTML = `Connected to: ${conn.peer} `;
         ready();
     });
 
-    peer.on('disconnected', function () {
-        console.log('Connection lost. Please reconnect');
+    peer.on(`disconnected`, function () {
+        console.log(`Connection lost. Please reconnect`);
     });
 
-    peer.on('close', function () {
+    peer.on(`close`, function () {
         conn = null;
-        console.log('Connection destroyed');
+        console.log(`Connection destroyed`);
     });
 
-    peer.on('error', function (err) {
+    peer.on(`error`, function (err) {
         console.log(err);
     });
 }
 
 function ready() {
-    conn.on('data', function (data) {
+    conn.on(`data`, function (data) {
         playerData = data;
         if (playerData.cell.x != null || playerData.cell.y != null) {
-            document.getElementById("col" + playerData.cell.x + "pos" + playerData.cell.y).style.backgroundColor = "yellow";
-            document.getElementById("col" + playerData.cell.x + "pos" + playerData.cell.y).className = "";
+            document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).style.backgroundColor = `yellow`;
+            document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).className = ``;
         }
         console.log(data);
     });
-    conn.on('close', function () {
+    conn.on(`close`, function () {
         conn = null;
     });
 }
-
