@@ -26,6 +26,10 @@ var playerData = {
     time: null
 }
 
+var boardConfig = {
+    size: 4
+}
+
 //Load the board
 initMultiplayer();
 initConfig();
@@ -331,6 +335,9 @@ function gameModeChange() {
     gameMode = document.getElementById(`gameMode`).value;
     document.getElementById(`resultStatus`).innerHTML = ``;
     if (gameMode == `single` || gameMode == `localmulti`) {
+        if (conn) {
+            conn.close();
+        }
         document.getElementById(`multiplayerCode`).innerHTML = ``;
         document.getElementById(`sizeSelect`).style.display = `initial`;
         document.getElementById(`resetBtn`).style.display = `initial`;
@@ -367,26 +374,32 @@ function gameModeChange() {
             });
 
             conn.on(`data`, function (data) {
-                playerData = data;
-                if (playerData.cell.x != null || playerData.cell.y != null) {
-                    document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).style.backgroundColor = `red`;
-                    document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).className = ``;
-                    turnSound.play();
-                }
-                if (playerData.hasWon != null) {
-                    if (playerData.hasWon == true) {
-                        document.getElementById(`resultStatus`).innerHTML = `ID: ${playerData.id} has won`;
-                    } else {
-                        document.getElementById(`resultStatus`).innerHTML = `-- Draw --`;
+                if (data.hasOwnProperty(`size`) == true) {
+                    boardConfig = data;
+                    loadBoard(boardConfig.size);
+                } else {
+                    playerData = data;
+                    if (playerData.cell.x != null || playerData.cell.y != null) {
+                        document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).style.backgroundColor = `red`;
+                        document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).className = ``;
+                        turnSound.play();
                     }
-                    gameOver = 1;
-                    playerData.playerTurn = 0;
+                    if (playerData.hasWon != null) {
+                        if (playerData.hasWon == true) {
+                            document.getElementById(`resultStatus`).innerHTML = `ID: ${playerData.id} has won`;
+                        } else {
+                            document.getElementById(`resultStatus`).innerHTML = `-- Draw --`;
+                        }
+                        gameOver = 1;
+                        playerData.playerTurn = 0;
+                    }
                 }
 
                 console.log(data);
             });
 
             conn.on(`close`, function () {
+                console.log('connection closed');
                 conn = null;
             });
         });
@@ -414,6 +427,7 @@ function initMultiplayer() {
         }
         conn = c;
         //This one is the host (player 1)
+        conn.send(boardConfig);
         document.getElementById(`multiplayerForm`).innerHTML = `Connected to: ${conn.peer} `;
         document.getElementById(`sizeSelect`).style.display = `none`;
         document.getElementById(`sizeLabel`).style.display = `none`;
@@ -436,7 +450,12 @@ function initMultiplayer() {
 
 function ready() {
     conn.on(`data`, function (data) {
+
         playerData = data;
+        if (playerData.id == null) {
+            boardConfig.size = columnNum;
+            conn.send(boardConfig);
+        }
         if (playerData.cell.x != null || playerData.cell.y != null) {
             document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).style.backgroundColor = `yellow`;
             document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).className = ``;
@@ -455,7 +474,9 @@ function ready() {
 
         console.log(data);
     });
+
     conn.on(`close`, function () {
+        console.log('connection closed');
         conn = null;
     });
 }
