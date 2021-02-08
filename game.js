@@ -22,6 +22,7 @@ var playerData = {
         x: null,
         y: null
     },
+    hasWon: null,
     time: null
 }
 
@@ -105,8 +106,6 @@ function placeToken(x, y) {
                 playerData.cell.y = y;
                 playerData.id = peer.id;
                 playerData.time = new Date().getTime();
-                conn.send(playerData);
-                playerData.playerTurn = 0;
                 checkWinner(x, y, peer.id);
                 console.log(playerData);
             }
@@ -248,32 +247,45 @@ function checkWinner(x, y, player) {
         if (matchCount == 4) {
             champion = player;
             gameOver = 1;
-            if (champion == `player`) {
-                winSound.play();
-                document.getElementById(`resetBtn`).style.display = `none`;
-                document.getElementById(`resultStatus`).innerHTML = `You've won! Write your name: <br>` +
-                    `<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>`;
-            } else if (champion == `player1`) {
-                winSound.play();
-                document.getElementById(`resetBtn`).style.display = `none`;
-                document.getElementById(`resultStatus`).innerHTML = `Player1 has won! Write your name: <br>` +
-                    `<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>`;
-            } else if (champion == `player2`) {
-                winSound.play();
-                document.getElementById(`resetBtn`).style.display = `none`;
-                document.getElementById(`resultStatus`).innerHTML = `Player2 has won! Write your name: <br>` +
-                    `<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>`;
-            } else if (champion == `machine`) {
-                loseSound.play();
-                matchesCount++;
-                document.getElementById(`resetBtn`).style.display = `initial`;
-                document.getElementById(`resultStatus`).innerHTML = `You've lost (lol)`;
+
+            if (gameMode == `single` || gameMode == `localmulti`) {
+                if (champion == `player`) {
+                    winSound.play();
+                    document.getElementById(`resetBtn`).style.display = `none`;
+                    document.getElementById(`resultStatus`).innerHTML = `You've won! Write your name: <br>` +
+                        `<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>`;
+                } else if (champion == `player1`) {
+                    winSound.play();
+                    document.getElementById(`resetBtn`).style.display = `none`;
+                    document.getElementById(`resultStatus`).innerHTML = `Player1 has won! Write your name: <br>` +
+                        `<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>`;
+                } else if (champion == `player2`) {
+                    winSound.play();
+                    document.getElementById(`resetBtn`).style.display = `none`;
+                    document.getElementById(`resultStatus`).innerHTML = `Player2 has won! Write your name: <br>` +
+                        `<p><input id='winnerName' type='text'></p><p><button onclick='saveValue()'>Save</button></p>`;
+                } else if (champion == `machine`) {
+                    loseSound.play();
+                    matchesCount++;
+                    document.getElementById(`resetBtn`).style.display = `initial`;
+                    document.getElementById(`resultStatus`).innerHTML = `You've lost (lol)`;
+                }
+                break;
+            } else if (gameMode == `online`) {
+                playerData.hasWon = true;
+                playerData.playerTurn = 0;
+                document.getElementById(`resultStatus`).innerHTML = `ID: ${peer.id} has won!`;
             }
-            break;
+
         } else {
             matchCount = 0;
         }
     }
+    if (gameMode == `online`) {
+        conn.send(playerData);
+        playerData.playerTurn = 0;
+    }
+
     if (matchCount == 0 && fullCells == boardSize) {
         matchesCount++;
         document.getElementById(`resetBtn`).style.display = `initial`;
@@ -348,9 +360,17 @@ function gameModeChange() {
 
             conn.on(`data`, function (data) {
                 playerData = data;
-                document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).style.backgroundColor = `red`;
-                document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).className = ``;
-                turnSound.play();
+                if (playerData.cell.x != null || playerData.cell.y != null) {
+                    document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).style.backgroundColor = `red`;
+                    document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).className = ``;
+                    turnSound.play();
+                }
+                if (playerData.hasWon == true) {
+                    console.log(`player 2 wins`)
+                    document.getElementById(`resultStatus`).innerHTML = `ID: ${playerData.id} has won`;
+                    gameOver = 1;
+                    playerData.playerTurn = 0;
+                }
                 console.log(data);
             });
 
@@ -409,6 +429,13 @@ function ready() {
             document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).style.backgroundColor = `yellow`;
             document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).className = ``;
             turnSound.play();
+        }
+
+        if (playerData.hasWon == true) {
+            console.log(`Host wins`);
+            document.getElementById(`resultStatus`).innerHTML = `ID: ${playerData.id} has won`;
+            gameOver = 1;
+            playerData.playerTurn = 0;
         }
         console.log(data);
     });
