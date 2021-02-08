@@ -482,7 +482,9 @@ function ready() {
 }
 
 function initConfig() {
-    const muteBtn = document.getElementById(`mute`);
+    const muteBtn = document.getElementById(`muteBtn`);
+    const themeBtn = document.getElementById(`themeBtn`);
+
     const volume = 1;
     var mute = true;
 
@@ -505,6 +507,16 @@ function initConfig() {
 
             muteBtn.textContent = `Mute audio`;
             mute = true;
+        }
+    });
+
+    themeBtn.addEventListener(`click`, () => {
+        if (document.body.style.backgroundColor == `rgb(57, 57, 57)`) {
+            document.body.style.backgroundColor = `#ffffff`;
+            document.body.style.color = `#000000`;
+        } else {
+            document.body.style.backgroundColor = `#393939`;
+            document.body.style.color = `#ffffff`;
         }
     });
 }
