@@ -3,12 +3,12 @@
  * Credits to ceci_cifu for helping me with cool ideas and development!
  */
 
-var winners = [];
+const winners = [];
 var matchesCount = 1;
 var gameOver = 0;
-var winSound = new Audio(`audio/winSound.wav`);
-var loseSound = new Audio(`audio/loseSound.flac`);
-var turnSound = new Audio(`audio/turnSound.wav`);
+const winSound = new Audio(`audio/winSound.wav`);
+const loseSound = new Audio(`audio/loseSound.flac`);
+const turnSound = new Audio(`audio/turnSound.wav`);
 var gameMode = document.getElementById(`gameMode`).value;
 var playerTurn = 1;
 
@@ -17,7 +17,7 @@ var peer = null;
 
 //TODO add variable to capture when the game is over and who the winner
 var playerData = {
-    ID: null,
+    id: null,
     playerTurn: 0,
     cell: {
         x: null,
@@ -27,6 +27,7 @@ var playerData = {
 }
 
 //Load the board
+initConfig();
 loadBoard(4);
 initMultiplayer();
 
@@ -74,7 +75,7 @@ function placeToken(x, y) {
         turnSound.play();
     }
     if (gameOver == 0) {
-        var cell = document.getElementById(`col${x}pos${y}`);
+        const cell = document.getElementById(`col${x}pos${y}`);
 
         if (cell.style.backgroundColor != `red` && cell.style.backgroundColor != `yellow`) {
             if (gameOver == 0 && gameMode == `localmulti` && playerTurn == 1) {
@@ -103,7 +104,7 @@ function placeToken(x, y) {
                 cell.className = ``;
                 playerData.cell.x = x;
                 playerData.cell.y = y;
-                playerData.ID = peer.id;
+                playerData.id = peer.id;
                 playerData.time = new Date().getTime();
                 conn.send(playerData);
                 playerData.playerTurn = 0;
@@ -124,7 +125,7 @@ function placeToken(x, y) {
 function randomThrow() {
     var condition = true;
     var x;
-    var y
+    var y;
     while (condition == true) {
         x = Math.floor((Math.random() * columnNum) + 1);
         y = Math.floor((Math.random() * columnNum) + 1);
@@ -282,7 +283,7 @@ function checkWinner(x, y, player) {
 }
 
 function saveValue() {
-    var ganador = {
+    const ganador = {
         name: document.getElementById(`winnerName`).value,
         numThrows: matchesCount,
         game: gameMode
@@ -309,7 +310,9 @@ function restartGame() {
 
 function gameModeChange() {
     gameMode = document.getElementById(`gameMode`).value;
+    document.getElementById(`resultStatus`).innerHTML = ``;
     if (gameMode == `single` || gameMode == `localmulti`) {
+        document.getElementById(`multiplayerCode`).innerHTML = ``;
         document.getElementById(`resetBtn`).style.display = `initial`;
         playerTurn = 1;
     }
@@ -317,11 +320,11 @@ function gameModeChange() {
     if (document.getElementById(`gameMode`).value == `online`) {
         document.getElementById(`resetBtn`).style.display = `none`;
 
-        var mpCode = document.getElementById(`multiplayerCode`);
+        const mpCode = document.getElementById(`multiplayerCode`);
         mpCode.innerHTML = `<p>Your Code</p><br>`;
         mpCode.innerHTML += `<input id='code' type='text' value='${peer.id}' disabled><br><br>`;
 
-        var mpForm = document.getElementById(`multiplayerForm`);
+        const mpForm = document.getElementById(`multiplayerForm`);
         mpForm.innerHTML = `<input id='connect' type='text' placeholder='Type code to connect'>`;
         mpForm.innerHTML += `<button id='connectButton' type='text'>Connect</button>`;
         document.getElementById(`connectButton`).addEventListener(`click`, () => {
@@ -404,5 +407,27 @@ function ready() {
     });
     conn.on(`close`, function () {
         conn = null;
+    });
+}
+
+function initConfig() {
+    const muteBtn = document.getElementById(`mute`);
+    var mute = true;
+    muteBtn.addEventListener(`click`, () => {
+        if (mute) {
+            winSound.volume = 0;
+            loseSound.volume = 0;
+            turnSound.volume = 0;
+
+            muteBtn.textContent = `Unmute audio`;
+            mute = false;
+        } else {
+            winSound.volume = 1;
+            loseSound.volume = 1;
+            turnSound.volume = 1;
+
+            muteBtn.textContent = `Mute audio`;
+            mute = true;
+        }
     });
 }

@@ -32,7 +32,7 @@ li.nonColored:hover {
     text-align: center;
     margin: 10px 0;
 }
-#text, #multiplayerForm, #multiplayerCode {
+#text, #multiplayerForm, #multiplayerCode, #resultStatus {
     text-align: center;
 }
 #multiplayerCode #code {
