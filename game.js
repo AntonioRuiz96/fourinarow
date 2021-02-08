@@ -15,7 +15,6 @@ var playerTurn = 1;
 var conn = null;
 var peer = null;
 
-//TODO add variable to capture when the game is over and who the winner
 var playerData = {
     id: null,
     playerTurn: 0,
@@ -27,9 +26,9 @@ var playerData = {
 }
 
 //Load the board
+initMultiplayer();
 initConfig();
 loadBoard(4);
-initMultiplayer();
 
 var boardSize = document.getElementsByTagName(`li`).length;
 var rowNum = document.getElementById(`column1`).getElementsByTagName(`li`).length;
@@ -70,8 +69,8 @@ function loadBoard(size) {
 
 function placeToken(x, y) {
 
-    if (gameOver == 0 && document.getElementById(`col${x}pos${y}`).style.backgroundColor != "red" &&
-        document.getElementById(`col${x}pos${y}`).style.backgroundColor != "yellow") {
+    if (gameOver == 0 && document.getElementById(`col${x}pos${y}`).style.backgroundColor != `red` &&
+        document.getElementById(`col${x}pos${y}`).style.backgroundColor != `yellow`) {
         turnSound.play();
     }
     if (gameOver == 0) {
@@ -194,7 +193,7 @@ function checkWinner(x, y, player) {
 
             default:
                 break;
-        }//TODO make game posible to swap 3 in a row to 6 in a row with all `4`s converted to variable
+        }
         for (var k = 0; k < columnNum; k++) {//columns
             for (var j = 0; j < rowNum; j++) {//row
                 for (var z = 0; z < 4; z++) {//Cell checks
@@ -313,7 +312,9 @@ function gameModeChange() {
     document.getElementById(`resultStatus`).innerHTML = ``;
     if (gameMode == `single` || gameMode == `localmulti`) {
         document.getElementById(`multiplayerCode`).innerHTML = ``;
+        document.getElementById(`sizeSelect`).style.display = `initial`;
         document.getElementById(`resetBtn`).style.display = `initial`;
+        document.getElementById(`sizeLabel`).style.display = `initial`;
         playerTurn = 1;
     }
 
@@ -341,12 +342,15 @@ function gameModeChange() {
                 playerData.playerTurn = 1;
                 conn.send(playerData);
                 playerData.playerTurn = 0;
+                document.getElementById(`sizeSelect`).style.display = `none`;
+                document.getElementById(`sizeLabel`).style.display = `none`;
             });
 
             conn.on(`data`, function (data) {
                 playerData = data;
                 document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).style.backgroundColor = `red`;
                 document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).className = ``;
+                turnSound.play();
                 console.log(data);
             });
 
@@ -379,6 +383,8 @@ function initMultiplayer() {
         conn = c;
         //This one is the host (player 1)
         document.getElementById(`multiplayerForm`).innerHTML = `Connected to: ${conn.peer} `;
+        document.getElementById(`sizeSelect`).style.display = `none`;
+        document.getElementById(`sizeLabel`).style.display = `none`;
         ready();
     });
 
@@ -402,6 +408,7 @@ function ready() {
         if (playerData.cell.x != null || playerData.cell.y != null) {
             document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).style.backgroundColor = `yellow`;
             document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).className = ``;
+            turnSound.play();
         }
         console.log(data);
     });
@@ -412,7 +419,13 @@ function ready() {
 
 function initConfig() {
     const muteBtn = document.getElementById(`mute`);
+    const volume = 1;
     var mute = true;
+
+    winSound.volume = volume;
+    loseSound.volume = volume;
+    turnSound.volume = volume;
+
     muteBtn.addEventListener(`click`, () => {
         if (mute) {
             winSound.volume = 0;
@@ -422,9 +435,9 @@ function initConfig() {
             muteBtn.textContent = `Unmute audio`;
             mute = false;
         } else {
-            winSound.volume = 1;
-            loseSound.volume = 1;
-            turnSound.volume = 1;
+            winSound.volume = volume;
+            loseSound.volume = volume;
+            turnSound.volume = volume;
 
             muteBtn.textContent = `Mute audio`;
             mute = true;
