@@ -287,8 +287,16 @@ function checkWinner(x, y, player) {
     }
 
     if (matchCount == 0 && fullCells == boardSize) {
-        matchesCount++;
-        document.getElementById(`resetBtn`).style.display = `initial`;
+        if (gameMode == `local` || gameMode == `localmulti`) {
+            matchesCount++;
+            document.getElementById(`resetBtn`).style.display = `initial`;
+        }
+
+        if (gameMode == `online`) {
+            playerData.hasWon = false;
+            conn.send(playerData);
+            playerData.playerTurn = 0;
+        }
         document.getElementById(`resultStatus`).innerHTML = `-- Draw --`;
     }
 }
@@ -365,12 +373,16 @@ function gameModeChange() {
                     document.getElementById(`col${playerData.cell.x}pos${playerData.cell.y}`).className = ``;
                     turnSound.play();
                 }
-                if (playerData.hasWon == true) {
-                    console.log(`player 2 wins`)
-                    document.getElementById(`resultStatus`).innerHTML = `ID: ${playerData.id} has won`;
+                if (playerData.hasWon != null) {
+                    if (playerData.hasWon == true) {
+                        document.getElementById(`resultStatus`).innerHTML = `ID: ${playerData.id} has won`;
+                    } else {
+                        document.getElementById(`resultStatus`).innerHTML = `-- Draw --`;
+                    }
                     gameOver = 1;
                     playerData.playerTurn = 0;
                 }
+
                 console.log(data);
             });
 
@@ -431,12 +443,16 @@ function ready() {
             turnSound.play();
         }
 
-        if (playerData.hasWon == true) {
-            console.log(`Host wins`);
-            document.getElementById(`resultStatus`).innerHTML = `ID: ${playerData.id} has won`;
+        if (playerData.hasWon != null) {
+            if (playerData.hasWon == true) {
+                document.getElementById(`resultStatus`).innerHTML = `ID: ${playerData.id} has won`;
+            } else {
+                document.getElementById(`resultStatus`).innerHTML = `-- Draw --`;
+            }
             gameOver = 1;
             playerData.playerTurn = 0;
         }
+
         console.log(data);
     });
     conn.on(`close`, function () {
